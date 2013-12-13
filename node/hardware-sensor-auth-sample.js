@@ -4,16 +4,16 @@ var mqtt = require('mqtt'),
     mac = require("getmac");
 
 // Orchestration variables 
-var IS_DEBUG = true;
-var SEND_FREQ = (IS_DEBUG) ? 18000 : 60000; //1 min
+var IS_DEBUG = false;
+var SEND_FREQ = 6000; //6 sec
 
 // Message endpoint variables
 var BROKER_HOST = process.env.BROKER_HOST || 'data.enableiot.com';
 var BROKER_PORT = process.env.BROKER_PORT || 8884;
 var BROKER_DATA_TOPIC = process.env.BROKER_DATA_TOPIC || "data";
 var BROKER_OPTS = {
-   keyPath: process.env.BROKER_HOST_KEY || 'certs/client.key',
-   certPath: process.env.BROKER_HOST_CERT || 'certs/client.crt',
+   keyPath: process.env.BROKER_HOST_KEY || '~/enableiot/certs/client.key',
+   certPath: process.env.BROKER_HOST_CERT || '~/enableiot/certs/client.crt',
    username: process.env.BROKER_HOST_USR || 'username',
    password: process.env.BROKER_HOST_PSW || 'password',
    keepalive: 30000
@@ -129,9 +129,7 @@ var get_metrics = function(){
         msg.data_source[0].metrics = metrics;
 
         // If in debug than print to console, else send to broker
-        if (IS_DEBUG) 
             console.log(JSON.stringify(msg)); 
-        else
             broker.publish(broker_topic, JSON.stringify(msg));
         
         console.log("OK: " + new Date());
