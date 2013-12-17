@@ -11,3 +11,7 @@ These samples focus on three specific activities:
 * sensor reading
 * message formatting 
 * and connectivity to Cloud
+
+For detail instructions on access of your data in the Cloud please see the [wiki](https://github.com/enableiot/iotkit-samples/wiki)
+
+
