@@ -3,23 +3,13 @@ var http = require('http'),
     fs =  require("fs");
 
 
-// Sample temperature 
-var getTemp = function(){
-    var temp = 26.5;
-    // TODO: Do your magic here to populate the temp value
-    return temp;
-}
+// Sample data, replace it with sensor call results
+var msg = { 
+    "s": "temp-sensor", 
+    "m": "air-temp", 
+    "v": 26.7 
+};
 
-// Message
-var msg = {
-    "metric": "temp", 
-    "value": getTemp()
-}
-
-// Message string
-jsonObj = JSON.stringify(msg);
-console.info('Reading:');
-console.info(jsonObj);
 
 // HTTP Headers
 var putHeaders = {
@@ -29,21 +19,16 @@ var putHeaders = {
 
 // HTTP Options 
 var putOpts = {
-    host : 'localhost',
+    host : '127.0.0.1',
     port : 8080,
-    path : '/temp-sensor',
+    path : '/data',
     method : 'PUT',
     headers : putHeaders
 };
 
-console.info('Options:');
-console.info(putOpts);
-
-
-// do the POST call
+// Do the POST call
 var putReq = http.request(putOpts, function(res) {
     console.log("statusCode: ", res.statusCode);
-
     res.on('data', function(d) {
         console.info('PUT result:\n');
         process.stdout.write(d);
