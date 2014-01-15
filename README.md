@@ -46,7 +46,7 @@ Any development framework supporting MQTT client can use local agent. Here is a 
 
 Most development framework have an integrated Web Request object. Here is a curl example `tests/rest-test.sh`:
 
-    curl -i -X PUT http://127.0.0.1:8080/ \
+    curl -i -X PUT http://127.0.0.1:9090/ \
     	  -H 'Content-Type: application/json' \
          --data '{ "s": "temp-sensor", "m": "air-temp", "v": 26.7 }' 
          
