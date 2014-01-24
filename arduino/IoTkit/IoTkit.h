@@ -17,6 +17,7 @@ public:
 
 	// store the username and password into the config file. This only needs to be called once.
 	static int storeCredentials(const char* username, const char* password);
+	static int setDateTimeUtc(int year, int month, int day, int hour, int minute, int second = 0);
 
 	void begin(unsigned int localport = 8080);
 	int send(const char* source, const char* measurement, int value);
