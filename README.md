@@ -63,4 +63,28 @@ If assuring the message delivery to the `iotkit-agent` is important to you (yes,
 
     echo -n '{"s": "temp-sensor", "m": "air-temp", "v": 26.7}' | \
          nc 127.0.0.1 7070
-         
+        
+### Arduino
+
+####  Steps
+1. Ensure you have the latest SD card image
+2. Ensure you have the Arduino IDE (for Galileo) installed, the correct Serial/USB driver, and the correct COM port set. You should be able to download a simple sketch such as the "Blink" example and see the LED blink.
+3. Import the IoTkit Arduino library (instuctions below).
+4. Open the IoTkitStoreCredentials example,change the username and password, and download it to the board. This should set the credentials. This will not need to be done again unless you replace or overwrite the SD card.
+5. Reset the board by pressing the "REBOOT" button (or remove and reinsert the power connector). This will enable the agent to use the new username and password parameters.
+5. Open the IoTkitSetDateTime example, modify the function parameters for the current UTC date and time and download it to the board. This will need to be done each time power is applied to the board unless a battery has been connected to the COIN header.
+6. Open the SimpleIoTkitExample and download it to the board.
+7. Confirm data is being sent to the broker. There are several ways to do this, including subscribung to the broker.
+
+##### Steps to install the IoTkit Arduino library and examples
+
+1. Download the IoTkit.zip file from the Arduino directory
+2. From the Arduino IDE, select Sketch -> Import Library -> Add Library
+3. Select the zip file, click "open"
+4. You should see a message like: Library added to your libraries. Check "Import Library" menu.
+4. Select File -> Examples -> IoTkit -> SimpleIoTkitExample
+5. This should open a new sketch window with an example
+6. Ensure the agent is running on the Galileo
+7. Compile and Upload the sketch
+8. You should see a new measurements for: source: "temp-Sensor" measurement: "temp" value: 26.42
+
