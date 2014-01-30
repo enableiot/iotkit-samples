@@ -1,3 +1,5 @@
+> The version currently in master is getting upgraded to WindRiver server format. Should not have an impact on the current flow, but to assure stable version please use `0.0.7`
+
 # IoT Kit Samples
 
 Samples illustrating how to develop applications on the IoT Kit platform. 
