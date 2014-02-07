@@ -1,6 +1,6 @@
 IoTkit   KEYWORD1
 
-storeCredentials    KEYWORD2
-setDateTimeUtc      KEYWORD2
-begin               KEYWORD2
-send                KEYWORD2
+registerMeasurement     KEYWORD2
+setDateTimeUtc          KEYWORD2
+begin                   KEYWORD2
+send                    KEYWORD2
