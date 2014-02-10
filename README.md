@@ -42,7 +42,7 @@ Where:
 
 Once the data source is configured, you can send to the Cloud your metric data. Everything else will be provided by the agent before your message is relayed to the cloud. Regardless of the protocol used, the `iotkit-agent` expect the inbound message to be in following format:
 
-    { "s": "temp-sensor", "v": 26.7 }
+    { "s": "Temperature", "v": 26.7 }
 
 Where:
 
