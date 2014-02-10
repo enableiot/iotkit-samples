@@ -45,15 +45,16 @@ public:
 	// register a measurement
 	int registerMeasurement(const char* source, const char* type, const char * uom);
 
-	// send data for a source. The source must be previously registered
-	int send(const char* source, const char* measurement, int value);
-	int send(const char* source, const char* measurement, double value);
-	int send(const char* source, const char* measurement, char* value);
+	// send data for a source. The source must have been previously registered
+	int send(const char* source, int value);
+	int send(const char* source, double value);
 
 protected:
 
 	EthernetUDP *_udp;
 	IPAddress _ip;		
+
+	int send(const char* source, char* value);
 };
 
 #endif

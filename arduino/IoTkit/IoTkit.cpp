@@ -61,22 +61,22 @@ int IoTkit::registerMeasurement(const char* source, const char* type, const char
   _udp->endPacket();
 }
 
-int IoTkit::send(const char* source, const char* measurement, int value)
+int IoTkit::send(const char* source, int value)
 {
 
   char buffer[128];
   int len = snprintf(buffer, 1024, "%d", value);
-  send(source, measurement, buffer);
+  send(source, buffer);
 }
 
-int IoTkit::send(const char* source, const char* measurement, double value)
+int IoTkit::send(const char* source, double value)
 {
   char buffer[128];
   int len = snprintf(buffer, 1024, "%f", value);
-  send(source, measurement, buffer);
+  send(source, buffer);
 }
 
-int IoTkit::send(const char* source, const char* measurement, char * value)
+int IoTkit::send(const char* source, char * value)
 {
   // since the value could be any length, don't use the buffer. 
   // Instead use udp.write to write the value.
@@ -85,9 +85,7 @@ int IoTkit::send(const char* source, const char* measurement, char * value)
   
   _udp->write("{\"s\":\"");
   _udp->write(source);
-  _udp->write("\",\"m\":\"");
-  _udp->write(measurement);
-  _udp->write("\",\"v\":");
+   _udp->write("\",\"v\":");
   _udp->write(value);
   _udp->write("}");
   

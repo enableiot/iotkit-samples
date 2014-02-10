@@ -24,7 +24,7 @@ void loop() {
   Serial.println(" degrees celcius.");
   
   // call send to generate one observation
-  iotkit.send("gateway", "temp", temp);                
+  iotkit.send("temp", temp);                
 
   delay(15000);
 }
