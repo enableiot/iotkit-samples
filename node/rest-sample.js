@@ -6,7 +6,6 @@ var http = require('http'),
 // Sample data, replace it with sensor call results
 var msg = { 
     "s": "temp-sensor", 
-    "m": "air-temp", 
     "v": 26.7 
 };
 
