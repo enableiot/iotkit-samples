@@ -8,7 +8,7 @@ While the list of applications one could develop on this platform is endless, th
 
 ## Usage
 
-Currently the `iotkit-agent` supports the following protocols: 
+These samples assume you have already installed (or have access to) the [iotkit-agent](https://github.com/enableiot/iotkit-agent) which supports the following protocols: 
 
 * MQTT
 * REST 
