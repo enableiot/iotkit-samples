@@ -1,10 +1,6 @@
 # IoT Kit Samples
 
-Samples illustrating how to develop applications on the IoT Kit platform. 
-
-![IoT Kit Overview](https://dl.dropboxusercontent.com/u/202873466/IotKit/iotkit-sample-splash.png)
-
-While the list of applications one could develop on this platform is endless, the samples listed in this repo demonstrate how to collect data from connected sensors, format it and relay that data to the Cloud portion of IoT Kit for analytics.
+Samples illustrating application development on the IoT Kit platform. 
 
 ## Usage
 
@@ -17,7 +13,7 @@ These samples assume you have already installed (or have access to) the [iotkit-
 
 ### Setup
 
-In order to use `iotkit-agent` you have to create a [enableiot.com](http://enableiot.com) account. Once your account is verified you will be able to add individual devices. The rest of this document assumes you have already registered your devices in the Cloud.
+In order to use `iotkit-agent` you have to create a [enableiot.com](http://enableiot.com) account. Once you verify registered email address you will be able to add individual devices. The rest of this document assumes you have already registered your devices in the Cloud.
 
 ### Sensor Configuration 
 
@@ -35,8 +31,7 @@ Where:
 * t - is the type of data this source generates
 * u - is the unit of measure for this data type
 
-> The device registration needs to be performed for each new sensor
-
+> The device registration needs to be performed only once for each new sensor
 
 ### Data Submission 
 
@@ -46,7 +41,7 @@ Once the data source is configured, you can send to the Cloud your metric data. 
 
 Where:
 
-* s - is the source of this measurement
+* s - is the source of this measurement (`s` from sensor configuration step)
 * v - is the value of this measurement
 
 ## Protocol-specific API
@@ -83,5 +78,8 @@ If assuring the message delivery to the `iotkit-agent` is important to you (yes,
         
 ## How to
 
-See our [wiki](https://github.com/enableiot/iotkit-samples/wiki) for additional information (FAQs, Arduino, Data access etc.)
+See our [wiki pages](https://github.com/enableiot/iotkit-samples/wiki) for additional information (FAQs, Arduino, Data access etc.)
 
+## Feedback 
+
+Yes please... use the [Issues Section](https://github.com/enableiot/iotkit-samples/issues) to report bugs, recommend enhancements, or simply ask questions. 
