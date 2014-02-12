@@ -13,7 +13,12 @@ void setup() {
   // call begin on the IoTkit object before calling any other methods
   iotkit.begin();
 
-  // register the temp source 
+  // register the measurement. This only needs to be done once per board
+  // (unless the agent is updated), but there is no harm in calling it
+  // each time the sketch starts
+  // parm1 - the name of the measurement. Calls to send must use the same value
+  // parm2 - the type of the measurment "int" or "float"
+  // parm3 - the unit of measure to be diplayed on the charts
   iotkit.registerMeasurement("temp", "float", "Celsius");
 }
 

@@ -3,7 +3,7 @@
 //sends the observed data to the Intel IoTkit Cloud
 
 #include <Ethernet.h>  // must be included to use IoTkit
-#include <IoTkit.h>                         // include IoTkit.h to use the Intel IoT Kit
+#include <IoTkit.h>    // include IoTkit.h to use the Intel IoT Kit
 
 // create an object of the IoTkit class
 IoTkit iotkit;        
@@ -15,6 +15,14 @@ void setup() {
 
   // call begin on the IoTkit object before calling any other methods
   iotkit.begin();
+
+  // register the measurement. This only needs to be done once per board
+  // (unless the agent is updated), but there is no harm in calling it
+  // each time the sketch starts
+  // parm1 - the name of the measurement. Calls to send must use the same value
+  // parm2 - the type of the measurment "int" or "float"
+  // parm3 - the unit of measure to be diplayed on the charts
+  iotkit.registerMeasurement("temp", "float", "Celsius");
 }
 
 void loop() {
@@ -23,7 +31,9 @@ void loop() {
   Serial.print(temp);
   Serial.println(" degrees celcius.");
   
-  // call send to generate one observation
+  // call send to generate one observation.
+  // parm1 - the name of the measurement. It must have been previously registered.
+  // parm2 - the value to send as the measurement observation
   iotkit.send("temp", temp);                
 
   delay(15000);
