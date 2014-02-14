@@ -43,18 +43,19 @@ public:
 	void begin(unsigned int localport = 8080);
 
 	// register a measurement
-	int registerMeasurement(const char* source, const char* type, const char * uom);
+	int registerMetric(const char* metric, const char* type, const char * uom);
 
-	// send data for a source. The source must have been previously registered
-	int send(const char* source, int value);
-	int send(const char* source, double value);
+	// send a value for a metric. The source must have been previously registered
+	int send(const char* metric, int value);
+	int send(const char* metric, double value);
+	int send(const char* metric, const char * value);
 
 protected:
 
 	EthernetUDP *_udp;
 	IPAddress _ip;		
 
-	int send(const char* source, char* value);
+	int psend(const char* metric, const char* value, bool emitQuotes = false);
 };
 
 #endif

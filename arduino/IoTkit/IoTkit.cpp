@@ -46,12 +46,15 @@ void IoTkit::begin(unsigned int localport)
   _udp->begin(localport);
 }
 
-int IoTkit::registerMeasurement(const char* source, const char* type, const char * uom)
+// A (very) partial JSON encoder. if this becomes any more complex, 
+// consider a JSON library such as https://github.com/interactive-matter/aJson
+
+int IoTkit::registerMetric(const char* metric, const char* type, const char * uom)
 {
    _udp->beginPacket(_ip, 41234);
   
   _udp->write("{\"s\":\"");
-  _udp->write(source);
+  _udp->write(metric);
   _udp->write("\",\"t\":\"");
   _udp->write(type);
   _udp->write("\",\"u\":\"");
@@ -61,22 +64,26 @@ int IoTkit::registerMeasurement(const char* source, const char* type, const char
   _udp->endPacket();
 }
 
-int IoTkit::send(const char* source, int value)
-{
-
-  char buffer[128];
-  int len = snprintf(buffer, 1024, "%d", value);
-  send(source, buffer);
-}
-
-int IoTkit::send(const char* source, double value)
+int IoTkit::send(const char* metric, int value)
 {
   char buffer[128];
-  int len = snprintf(buffer, 1024, "%f", value);
-  send(source, buffer);
+  int len = snprintf(buffer, 128, "%d", value);
+  psend(metric, buffer);
 }
 
-int IoTkit::send(const char* source, char * value)
+int IoTkit::send(const char* metric, double value)
+{
+  char buffer[128];
+  int len = snprintf(buffer, 128, "%f", value);
+  psend(metric, buffer);
+}
+
+int IoTkit::send(const char* metric, const char * value)
+{
+  psend(metric, value, 1);
+}
+
+int IoTkit::psend(const char* metric, const char * value, bool emitQuotes)
 {
   // since the value could be any length, don't use the buffer. 
   // Instead use udp.write to write the value.
@@ -84,10 +91,14 @@ int IoTkit::send(const char* source, char * value)
   _udp->beginPacket(_ip, 41234);
   
   _udp->write("{\"s\":\"");
-  _udp->write(source);
-   _udp->write("\",\"v\":");
+  _udp->write(metric);
+  _udp->write("\",\"v\":");
+  if (emitQuotes)
+    _udp->write('"');
   _udp->write(value);
+  if (emitQuotes)
+    _udp->write('"');
   _udp->write("}");
-  
+
   _udp->endPacket();
 }
