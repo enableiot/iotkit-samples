@@ -80,6 +80,8 @@ If assuring the message delivery to the `iotkit-agent` is important to you (yes,
 
 See our [wiki pages](https://github.com/enableiot/iotkit-samples/wiki) for additional information (FAQs, Arduino, Data access etc.)
 
+[[How to for Arduino]]
+
 ## Feedback 
 
 Yes please... use the [Issues Section](https://github.com/enableiot/iotkit-samples/issues) to report bugs, recommend enhancements, or simply ask questions. 
