@@ -13,11 +13,11 @@ These samples assume you have already installed (or have access to) the [iotkit-
 
 ### Setup
 
-In order to use `iotkit-agent` you have to create a [enableiot.com](http://enableiot.com) account. Once you verify registered email address you will be able to add individual devices. The rest of this document assumes you have already registered your devices in the Cloud.
+In order to use `iotkit-agent` you have to create an account on [enableiot.com](http://enableiot.com). Once you verify the registered email address you will be able to add individual devices. The rest of this document assumes you have already registered your devices in the Cloud.
 
 ### Sensor Configuration 
 
-In order to submit data to the IoT Kit Cloud, the individual sensor have to be first registered. Regardless of the protocol used, the `iotkit-agent` expects the inbound sensor registration message to be in following simple format:
+In order to submit data to the IoT Kit Cloud, the individual metrics have to be registered first. Regardless of the protocol used, the `iotkit-agent` expects the inbound metric registration message to be in following simple format:
 
     { "s": "Temperature", "t": "float", "u": "Celsius" }
     
@@ -27,21 +27,21 @@ OR
     
 Where:
 
-* s - is the data source (sensor)
-* t - is the type of data this source generates
+* s - the metric name ("Temperature", "Humidity", "Weight", "Force", etc.)
+* t - is the type of data this source generates ("float", "int")
 * u - is the unit of measure for this data type
 
-> The device registration needs to be performed only once for each new sensor
+> The registration needs to be performed only once for each new metric
 
 ### Data Submission 
 
-Once the data source is configured, you can send to the Cloud your metric data. Everything else will be provided by the agent before your message is relayed to the cloud. Regardless of the protocol used, the `iotkit-agent` expect the inbound message to be in following format:
+Once the metric has been registered, you can send your observations for that metric to the cloud. Everything else will be provided by the agent before your message is relayed to the cloud. Regardless of the protocol used, the `iotkit-agent` expects the inbound message to be in following format:
 
     { "s": "Temperature", "v": 26.7 }
 
 Where:
 
-* s - is the source of this measurement (`s` from sensor configuration step)
+* s - is the metric name which was previous registered
 * v - is the value of this measurement
 
 ## Protocol-specific API
@@ -50,7 +50,7 @@ Many development frameworks have their own implementation of each one of these p
 
 #### MQTT
 
-Any development framework supporting MQTT client can use local agent. Here is a mosquitto_pub example `tests/mqtt-test.sh`:
+Any development framework supporting MQTT client can use the local agent. Here is a mosquitto_pub example `tests/mqtt-test.sh`:
 
     mosquitto_pub -t 'metric' -m '{ "s": "Temperature", "v": 26.7 }'
                   
