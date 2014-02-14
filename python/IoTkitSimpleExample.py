@@ -30,7 +30,7 @@ import time
 
 HOST = "127.0.0.1"
 PORT = 41234
-SEND_FREQ = 1
+SEND_FREQ = 60
 
 
 def register_metric(metric, data_type, uom):
