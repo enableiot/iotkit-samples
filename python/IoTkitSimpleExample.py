@@ -30,7 +30,7 @@ import time
 
 HOST = "127.0.0.1"
 PORT = 41234
-SEND_FREQ = 60
+INTERVAL = 60
 
 
 def register_metric(metric, data_type, uom):
@@ -76,5 +76,5 @@ while True:
     if t > next_send_time:
         temp = get_temp()
         send_data("temp", temp)
-        next_send_time = t + SEND_FREQ
+        next_send_time = t + INTERVAL
     time.sleep(1)
