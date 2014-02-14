@@ -15,7 +15,7 @@ These samples assume you have already installed (or have access to) the [iotkit-
 
 In order to use `iotkit-agent` you have to create an account on [enableiot.com](http://enableiot.com). Once you verify the registered email address you will be able to add individual devices. The rest of this document assumes you have already registered your devices in the Cloud.
 
-### Sensor Configuration 
+### Metric Registration 
 
 In order to submit data to the IoT Kit Cloud, the individual metrics have to be registered first. Regardless of the protocol used, the `iotkit-agent` expects the inbound metric registration message to be in following simple format:
 
