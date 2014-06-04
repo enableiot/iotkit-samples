@@ -53,13 +53,44 @@ void loop() {
 
   // If you are receiving incoming commands, listen for them with receive
   // If you have your own custom json-parsing receive function, pass as argument
-  // such as iotkit.receive(myCallbackFunction);
-  // It must follow this prototype, but any name: void myCallbackFunction(char* json)
+  // such as iotkit.receive(callback);
+  // It must follow this prototype, but any name: void callback(char* json)
   //
 
   iotkit.receive();
+  // iotkit.receive(callback);
 
   delay(1500);
+}
+
+// this is an example callback that parses a user-created JSON in the form
+// {
+//    "component": "led",
+//    "command": "off"
+// }
+// and turns off LED at pin 13 hard-coded
+//
+
+void callback(char* json) {
+  Serial.println(json);
+  aJsonObject* parsed = aJson.parse(json);
+  if (&parsed == NULL) {
+    // invalid or empty JSON
+    Serial.println("recieved invalid JSON");
+    return;
+  }
+  aJsonObject* component = aJson.getObjectItem(parsed, "component");
+  aJsonObject* command = aJson.getObjectItem(parsed, "command");
+  if ((component != NULL)) {
+    if (strcmp(component->valuestring, "led") == 0) {
+      if ((command != NULL)) {
+        if (strcmp(command->valuestring, "off") == 0) {
+          pinMode(13, OUTPUT);
+          digitalWrite(13, false);
+        }
+      }
+    }
+  }
 }
 
 // reads hardware temp sensor
