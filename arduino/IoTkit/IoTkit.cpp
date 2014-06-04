@@ -26,79 +26,186 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <IoTkit.h>
-#include <EthernetUdp.h>
+#include <Ethernet.h>
+#include <aJSON.h>
+#include <utility/pgmspace.h>
+#include <signal.h>  
+
+EthernetServer server(serverport);
 
 IoTkit::IoTkit()  
 {
   _udp = new EthernetUDP();
-  _ip = IPAddress(127, 0, 0, 1);    
-}
+  _ip = IPAddress(127,0,0,1);    
+  byte _mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+  char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
 
-int IoTkit::setDateTimeUtc(int year, int month, int day, int hour, int minute, int second)
-{
-  char buffer[128];
-  snprintf(buffer, 1024, "date %d.%d.%d-%d:%d:%d", year, month, day, hour, minute, second);
-  system(buffer);
 }
 
 void IoTkit::begin(unsigned int localport)
 {
+  //start TCP server
+  Ethernet.begin(_mac, _ip);
+  server.begin();
+
+  delay(1100);
+
+  //start UDP pipe
+  Ethernet.begin(_mac, _ip);
   _udp->begin(localport);
+  signal(SIGPIPE, SIG_IGN);  
+
 }
 
-// A (very) partial JSON encoder. if this becomes any more complex, 
-// consider a JSON library such as https://github.com/interactive-matter/aJson
-
-int IoTkit::registerMetric(const char* metric, const char* type, const char * uom)
-{
-   _udp->beginPacket(_ip, 41234);
-  
-  _udp->write("{\"s\":\"");
-  _udp->write(metric);
-  _udp->write("\",\"t\":\"");
-  _udp->write(type);
-  _udp->write("\",\"u\":\"");
-  _udp->write(uom);
-  _udp->write("\"}");
-  
-  _udp->endPacket();
-}
+// Now using https://github.com/interactive-matter/aJson
 
 int IoTkit::send(const char* metric, int value)
 {
   char buffer[128];
   int len = snprintf(buffer, 128, "%d", value);
-  psend(metric, buffer);
+  return send(metric, buffer);
 }
 
 int IoTkit::send(const char* metric, double value)
 {
   char buffer[128];
   int len = snprintf(buffer, 128, "%f", value);
-  psend(metric, buffer);
+  return send(metric, buffer);
 }
 
-int IoTkit::send(const char* metric, const char * value)
-{
-  psend(metric, value, 1);
+int IoTkit::send(const char* metric, const char * value) {
+  //convert to json
+  int val;
+  aJsonObject* root = aJson.createObject();
+  if (root == NULL) {
+    return -1;
+  }
+  aJson.addItemToObject(root, "n", aJson.createItem(metric));
+  aJson.addItemToObject(root, "v", aJson.createItem(value));
+  val = send(aJson.print(root));
+  aJson.deleteItem(root);
+  return val;
 }
 
-int IoTkit::psend(const char* metric, const char * value, bool emitQuotes)
+int IoTkit::send(char* json)
 {
-  // since the value could be any length, don't use the buffer. 
-  // Instead use udp.write to write the value.
-
+  // Use udp.write to write the value.
+  if (!checkJSON(json)) {
+    Serial.println("Malformed JSON, not sending");
+    return 1;
+  }
   _udp->beginPacket(_ip, 41234);
-  
-  _udp->write("{\"s\":\"");
-  _udp->write(metric);
-  _udp->write("\",\"v\":");
-  if (emitQuotes)
-    _udp->write('"');
-  _udp->write(value);
-  if (emitQuotes)
-    _udp->write('"');
-  _udp->write("}");
-
+  _udp->write(json);
   _udp->endPacket();
+  return 0;
+}
+
+bool IoTkit::checkJSON(char* json) {
+  aJsonObject* parsed = aJson.parse(json);
+  if (parsed == NULL) {
+    // invalid or empty JSON
+    return false;
+  }
+  aJson.deleteItem(parsed);
+  return true;
+}
+
+int IoTkit::receive(void (*f)(char*)) {
+
+  EthernetClient client = server.available();
+  while (client) {
+    if (client.connected()) {
+      char readString[IOTKIT_JSON_SIZE];
+restart:      
+      int count = 0;
+      while (client.available() && (count < IOTKIT_JSON_SIZE)) {
+        char c = client.read(); 
+        if (c == '\n') {
+          readString[count] = NULL;
+          char *done = readString;
+          if (checkJSON(done)) {
+            Serial.print("Good JSON Command from Server: ");
+            Serial.println(done);
+            (*f)(done);   
+            count = 0;
+            continue;
+          }
+          else {
+            Serial.println("Bad JSON Command from server.");
+            goto restart;
+          }
+        }
+        readString[count] = c;
+        count += 1;
+      }
+      if (count) {
+        Serial.print("No \\n at the end of command from server, or exceeded buffer limit. ");
+        Serial.println(count);
+        goto restart;
+      }
+    }
+    
+    //closing connection
+    client.stop();
+    client = NULL;
+    client = server.available();
+  }
+}
+
+int IoTkit::receive() {
+  receive(((void (*)(char*))(&IoTkit::incomingEnact)));
+}
+
+// for "set", the values are:
+//
+// 0: INPUT
+// 1: OUTPUT
+// 2: INPUT_PULLUP
+//
+// here is a sample JSON that (1) sets a pin to OUTPUT and (2) turns the LED on
+// 
+// {"set":{"pin":13,"value":1},"digital":{"write":{"pin":13,"value":true}}}  
+//
+
+void IoTkit::incomingEnact(char* json) {
+  aJsonObject* parsed = aJson.parse(json);
+  if (&parsed == NULL) {
+    // invalid or empty JSON
+    Serial.println("recieved invalid JSON");
+    return;
+  }
+  aJsonObject* digital = aJson.getObjectItem(parsed, "digital");
+  aJsonObject* analog = aJson.getObjectItem(parsed, "analog");
+  aJsonObject* set = aJson.getObjectItem(parsed, "set");
+  if ((set != NULL) && set->type != aJson_NULL && aJson.getObjectItem(set, "value") != NULL && aJson.getObjectItem(set, "pin") != NULL && aJson.getObjectItem(set, "pin")->valueint == 13) {
+    if (aJson.getObjectItem(set, "value")->valueint == 0) {
+      pinMode(aJson.getObjectItem(set, "pin")->valueint, INPUT);
+    }
+    if (aJson.getObjectItem(set, "value")->valueint == 1) {
+      pinMode(aJson.getObjectItem(set, "pin")->valueint, OUTPUT);
+    }
+    if (aJson.getObjectItem(set, "value")->valueint == 2) {
+      pinMode(aJson.getObjectItem(set, "pin")->valueint, INPUT_PULLUP);
+    }
+  }
+  if ((digital != NULL) && digital->type == aJson_Object) {
+    aJsonObject* write = aJson.getObjectItem(digital, "write"); //digitalWrite
+    aJsonObject* read = aJson.getObjectItem(digital, "read"); //digitalRead
+    if ((write != NULL) && write->type != aJson_NULL && aJson.getObjectItem(write, "pin") != NULL && aJson.getObjectItem(write, "value") != NULL && aJson.getObjectItem(write, "pin")->valueint == 13) {
+      digitalWrite(aJson.getObjectItem(write, "pin")->valueint, aJson.getObjectItem(write, "value")->valuebool);
+    }
+    if ((read != NULL) && read->type != aJson_NULL && aJson.getObjectItem(read, "pin") != NULL) {
+      digitalRead(aJson.getObjectItem(read, "pin")->valueint);
+    }
+  }
+  if ((analog != NULL) && analog->type == aJson_Object) {
+    aJsonObject* awrite = aJson.getObjectItem(analog, "write"); // analogWrite
+    aJsonObject* aread = aJson.getObjectItem(analog, "read"); // analogRead
+    if ((awrite != NULL) && awrite->type != aJson_NULL && aJson.getObjectItem(awrite, "pin") != NULL && aJson.getObjectItem(awrite, "value") != NULL  && aJson.getObjectItem(awrite, "pin")->valueint == 13) {
+      analogWrite(aJson.getObjectItem(awrite, "pin")->valueint, aJson.getObjectItem(awrite, "value")->valueint);
+    }
+    if ((aread != NULL) && aread->type != aJson_NULL && aJson.getObjectItem(aread, "pin") != NULL) {
+      analogRead(aJson.getObjectItem(aread, "pin")->valueint);
+    }
+  }
 }

@@ -27,35 +27,41 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifndef IOTKIT_H
 #define IOTKIT_H
+#define IOTKIT_JSON_SIZE 1024
+#define serverport 8080
 
 #include "Arduino.h"
-#include <Ethernet.h>
 #include <EthernetUdp.h>
+#include <aJSON.h>
+#include <utility/pgmspace.h>
 
 class IoTkit
 {
 public:
 	IoTkit();
 
-	// set the date and time on the board
-	static int setDateTimeUtc(int year, int month, int day, int hour, int minute, int second = 0);
-
 	void begin(unsigned int localport = 8080);
-
-	// register a measurement
-	int registerMetric(const char* metric, const char* type, const char * uom);
 
 	// send a value for a metric. The source must have been previously registered
 	int send(const char* metric, int value);
 	int send(const char* metric, double value);
-	int send(const char* metric, const char * value);
+	int send(char* json);
+	int receive(void (*f)(char*));
+	int receive();
+	bool checkJSON(char* json);
 
+private:
+
+		void incomingEnact(char* json); //default callback function
+		int send(const char* metric, const char * value);
+		
 protected:
 
 	EthernetUDP *_udp;
 	IPAddress _ip;		
+	byte _mac[];
+	char packetBuffer;
 
-	int psend(const char* metric, const char* value, bool emitQuotes = false);
 };
 
 #endif

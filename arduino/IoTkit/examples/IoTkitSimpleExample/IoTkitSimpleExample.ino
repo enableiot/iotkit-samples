@@ -2,8 +2,9 @@
 //onboard ADC, AD7298, using the iio (Industrial I/O) subsystem and 
 //sends the observed data to the Intel IoTkit Cloud
 
-#include <Ethernet.h>  // must be included to use IoTkit
 #include <IoTkit.h>    // include IoTkit.h to use the Intel IoT Kit
+#include <Ethernet.h>  // must be included to use IoTkit
+#include <aJSON.h>
 
 // create an object of the IoTkit class
 IoTkit iotkit;        
@@ -12,17 +13,8 @@ int temp;
 
 void setup() {
   Serial.begin(115200);
-
   // call begin on the IoTkit object before calling any other methods
   iotkit.begin();
-
-  // register the metric. This only needs to be done once per board
-  // (unless the agent is updated), but there is no harm in calling it
-  // each time the sketch starts.
-  // parm1 - the name of the metric. Calls to send must use the same value
-  // parm2 - the type of the metric "int", "float" or "string"
-  // parm3 - the unit of measure to be diplayed on the charts
-  iotkit.registerMetric("temp", "float", "Celsius");
 }
 
 void loop() {
@@ -34,11 +26,43 @@ void loop() {
   // call send to generate one observation.
   // parm1 - the name of the measurement. It must have been previously registered.
   // parm2 - the value to send as the measurement observation
-  iotkit.send("temp", temp);                
+  // you can also generate your own JSON and send multiple keys and values
+  // in this format:
+  //
+  // {
+  //   “n”: “Temp.Sensor”,
+  //   “v”: “27.2"
+  // }
+  //
+  // you need to escape the quotations to pass it directly to iotkit.send:
+  // iotkit.send("{\"n\": \"Temp.Sensor\",\"v\":\"27.2\"}");
+  //
 
-  delay(15000);
+  iotkit.send("Temp.Sensor", temp);  
+
+  // you can also send a full JSON string with your own variables:
+  //
+  // aJsonObject* root = aJson.createObject();
+  // if (root != NULL) {
+  //    aJson.addItemToObject(root, "n", aJson.createItem(metric));
+  //    aJson.addItemToObject(root, "v", aJson.createItem(value));
+  //    iotkit.send(aJson.print(root)); // this sends your full json
+  //    aJson.deleteItem(root);
+  // }
+  // 
+
+  // If you are receiving incoming commands, listen for them with receive
+  // If you have your own custom json-parsing receive function, pass as argument
+  // such as iotkit.receive(myCallbackFunction);
+  // It must follow this prototype, but any name: void myCallbackFunction(char* json)
+  //
+
+  iotkit.receive();
+
+  delay(1500);
 }
 
+// reads hardware temp sensor
 int getADCTemp(){
   char scale[4];
   char raw[4];

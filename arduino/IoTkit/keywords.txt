@@ -1,6 +1,3 @@
-IoTkit   KEYWORD1
-
-registerMeasurement     KEYWORD2
-setDateTimeUtc          KEYWORD2
+IoTkit          KEYWORD2
 begin                   KEYWORD2
-send                    KEYWORD2
+send                    KEYWORD2receive
