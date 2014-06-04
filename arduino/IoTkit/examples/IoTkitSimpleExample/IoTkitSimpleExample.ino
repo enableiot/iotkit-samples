@@ -57,8 +57,8 @@ void loop() {
   // It must follow this prototype, but any name: void callback(char* json)
   //
 
-  iotkit.receive();
-  // iotkit.receive(callback);
+  //iotkit.receive();
+  iotkit.receive(callback);
 
   delay(1500);
 }
@@ -87,6 +87,10 @@ void callback(char* json) {
         if (strcmp(command->valuestring, "off") == 0) {
           pinMode(13, OUTPUT);
           digitalWrite(13, false);
+        }
+        if (strcmp(command->valuestring, "on") == 0) {
+          pinMode(13, OUTPUT);
+          digitalWrite(13, true);
         }
       }
     }
