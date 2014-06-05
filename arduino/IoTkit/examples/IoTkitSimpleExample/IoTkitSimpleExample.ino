@@ -30,15 +30,15 @@ void loop() {
   // in this format:
   //
   // {
-  //   “n”: “Temp.Sensor”,
+  //   “n”: “temperature sensor”,
   //   “v”: “27.2"
   // }
   //
   // you need to escape the quotations to pass it directly to iotkit.send:
-  // iotkit.send("{\"n\": \"Temp.Sensor\",\"v\":\"27.2\"}");
+  // iotkit.send("{\"n\": \"temperature sensor\",\"v\":\"27.2\"}");
   //
 
-  iotkit.send("Temp.Sensor", temp);  
+  iotkit.send("temperature sensor", temp);  
 
   // you can also send a full JSON string with your own variables:
   //
