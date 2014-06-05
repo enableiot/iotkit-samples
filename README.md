@@ -46,33 +46,17 @@ Where:
 
 Many development frameworks have their own implementation of each one of these protocols. The following command-line examples should give you an idea how to access `iotkit-agent` API:
 
-#### MQTT
-
-Any development framework supporting MQTT client can use the local agent. Here is a mosquitto_pub example `tests/mqtt-test.sh`:
-
-    mosquitto_pub -t 'metric' -m '{ "s": "Temperature", "v": 26.7 }'
-                  
-> Note the -t [topic] is required but it can be anything
-
-#### REST (HTTP)
-
-Most development framework have an integrated Web Request object. Here is a curl example `tests/rest-test.sh`:
-
-    curl -i -X PUT http://127.0.0.1:9090/ \
-    	  -H 'Content-Type: application/json' \
-         --data '{ "s": "Temperature", "v": 26.7 }' 
-         
 #### UDP
 
-Even if your development framework does not support MQTT client or Web Request, you can still use UDP to send data to the Cloud. Here is a command line example `tests/udp-test.sh`:
+You can use UDP to send data to the Cloud. Here is a command line example:
 
-    echo -n '{ "s": "Temperature", "v": 26.7 }' | nc -4u -w1 127.0.0.1 41234
+    echo -n '{ "n": "temp sensor", "v": "5", "on": 1401893417000}' | nc -4u -w1 127.0.0.1 41234
          
 #### TCP
 
-If assuring the message delivery to the `iotkit-agent` is important to you (yes, I'm talking about you UDP) you can use a simple TCP socket connection to send your data. Here is a command line example `tests/tcp-test.sh`:
+If assuring the message delivery to the `iotkit-agent` is important to you (yes, I'm talking about you UDP) you can use a simple TCP socket connection to send your data. Here is a command line example:
 
-    echo -n '{ "s": "Temperature", "v": 26.7 }' | nc 127.0.0.1 7070
+    echo -n '{ "n": "temp sensor", "v": "5", "on": 1401893417000}' | nc 127.0.0.1 7070
         
 ## How to
 
