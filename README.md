@@ -6,30 +6,27 @@ Samples illustrating application development on the IoT Kit platform.
 
 These samples assume you have already installed (or have access to) the [iotkit-agent](https://github.com/enableiot/iotkit-agent) which supports the following protocols: 
 
-* MQTT
-* REST 
 * UDP
 * TCP
 
 ### Setup
 
-In order to use `iotkit-agent` you have to create an account on [enableiot.com](http://enableiot.com). Once you verify the registered email address you will be able to add individual devices. The rest of this document assumes you have already registered your devices in the Cloud.
+In order to use `iotkit-agent` you have to create an account on iotkit dashboard [iotkit-dashboard](https://dashboard.enableiot.com). Once you verify the registered email address you will be able to add individual devices. The rest of this document assumes you have already registered your devices in the Cloud.
 
-### Metric Registration 
+### Component Registration 
 
-In order to submit data to the IoT Kit Cloud, the individual metrics have to be registered first. Regardless of the protocol used, the `iotkit-agent` expects the inbound metric registration message to be in following simple format:
+In order to submit data to the IoT Kit Cloud, the individual components have to be registered first. Regardless of the protocol used, the `iotkit-agent` expects the inbound component registration message to be in following simple format:
 
-    { "s": "Temperature", "t": "float", "u": "Celsius" }
+    { "n": "temperature sensor", "t": "temperature.v1.0"}
     
 OR
 
-    { "s": "Humidity", "t": "integer", "u": "%" }
+    { "n": "humidity sensor", "t": "humidity.v1.0"}
     
 Where:
 
-* s - the metric name ("Temperature", "Humidity", "Weight", "Force", etc.)
-* t - is the type of data this source generates ("float", "int")
-* u - is the unit of measure for this data type
+* n - the component name ("Temperature", "Humidity", "Weight", "Force", etc.)
+* t - is the component type of data this source generates (This should be one of the Component Type defined in your account Catalog available in the [iotkit-dashboard](https://dashboard.enableiot.com))
 
 > The registration needs to be performed only once for each new metric
 
