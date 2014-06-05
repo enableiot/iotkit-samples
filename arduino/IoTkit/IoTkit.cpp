@@ -31,26 +31,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <utility/pgmspace.h>
 #include <signal.h>  
 
-EthernetServer server(serverport);
-
 IoTkit::IoTkit()  
 {
   _udp = new EthernetUDP();
-  _ip = IPAddress(127,0,0,1);    
-  byte _mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-  char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
+  _ip = IPAddress(IOTKIT_IP);    
+  byte _mac[] = {ARDUINO_MAC};
 
 }
 
 void IoTkit::begin(unsigned int localport)
 {
-  //start TCP server
-  Ethernet.begin(_mac, _ip);
-  server.begin();
 
-  delay(1100);
-
-  //start UDP pipe
   Ethernet.begin(_mac, _ip);
   _udp->begin(localport);
   signal(SIGPIPE, SIG_IGN);  
@@ -110,45 +101,34 @@ bool IoTkit::checkJSON(char* json) {
   return true;
 }
 
-int IoTkit::receive(void (*f)(char*)) {
+int IoTkit::checkPacket(const char *json)
+{
+    return (json && *json && json[strlen(json) - 1] == '\n') ? 0 : 1;
+}
 
-  EthernetClient client = server.available();
-  while (client) {
-    if (client.connected()) {
-      char readString[IOTKIT_JSON_SIZE];
-restart:      
-      int count = 0;
-      while (client.available() && (count < IOTKIT_JSON_SIZE)) {
-        char c = client.read(); 
-        if (c == '\n') {
-          readString[count] = NULL;
-          char *done = readString;
-          if (checkJSON(done)) {
-            Serial.print("Good JSON Command from Server: ");
-            Serial.println(done);
-            (*f)(done);   
-            count = 0;
-            continue;
-          }
-          else {
-            Serial.println("Bad JSON Command from server.");
-            goto restart;
-          }
-        }
-        readString[count] = c;
-        count += 1;
+int IoTkit::receive(void (*f)(char*)) {
+  char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
+  int packetSize = _udp->parsePacket();
+  while (packetSize) {
+    // read the packet into packetBufffer
+    _udp->read(packetBuffer,UDP_TX_PACKET_MAX_SIZE);
+    packetBuffer[packetSize] = NULL;
+    char *done = packetBuffer;
+    if (checkPacket(done) == 0) {
+      if (checkJSON(done)) {
+        Serial.print("Good JSON Command from Server: ");
+        Serial.println(done);
+        (*f)(done);
       }
-      if (count) {
-        Serial.print("No \\n at the end of command from server, or exceeded buffer limit. ");
-        Serial.println(count);
-        goto restart;
+      else {
+        Serial.println("Bad JSON Command from server.");
       }
     }
-    
-    //closing connection
-    client.stop();
-    client = NULL;
-    client = server.available();
+    else {
+      Serial.println("No \\n at the end of command from server, or exceeded buffer limit. ");
+      Serial.println(packetSize);
+    }
+    packetSize = _udp->parsePacket();
   }
 }
 

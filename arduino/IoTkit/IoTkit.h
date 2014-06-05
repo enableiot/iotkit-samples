@@ -28,7 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef IOTKIT_H
 #define IOTKIT_H
 #define IOTKIT_JSON_SIZE 1024
-#define serverport 8080
+#define IOTKIT_IP 127,0,0,1
+#define ARDUINO_MAC  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED 
 
 #include "Arduino.h"
 #include <EthernetUdp.h>
@@ -40,7 +41,7 @@ class IoTkit
 public:
 	IoTkit();
 
-	void begin(unsigned int localport = 8080);
+	void begin(unsigned int localport = 41235);
 
 	// send a value for a metric. The source must have been previously registered
 	int send(const char* metric, int value);
@@ -49,6 +50,7 @@ public:
 	int receive(void (*f)(char*));
 	int receive();
 	bool checkJSON(char* json);
+	int checkPacket(const char *json);
 
 private:
 
