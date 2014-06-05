@@ -13,9 +13,9 @@ These samples assume you have already installed (or have access to) the [iotkit-
 
 In order to use `iotkit-agent` you have to create an account on iotkit dashboard [iotkit-dashboard](https://dashboard.enableiot.com). Once you verify the registered email address you will be able to add individual devices. The rest of this document assumes you have already registered your devices in the Cloud.
 
-### Component Registration 
+### Sensor Registration 
 
-In order to submit data to the IoT Kit Cloud, the individual components have to be registered first. Regardless of the protocol used, the `iotkit-agent` expects the inbound component registration message to be in following simple format:
+In order to submit data to the IoT Kit Cloud, the individual sensors have to be registered first. Regardless of the protocol used, the `iotkit-agent` expects the inbound sensor registration message to be in following simple format:
 
     { "n": "temperature sensor", "t": "temperature.v1.0"}
     
@@ -25,21 +25,22 @@ OR
     
 Where:
 
-* n - the component name ("Temperature", "Humidity", "Weight", "Force", etc.)
-* t - is the component type of data this source generates (This should be one of the Component Type defined in your account Catalog available in the [iotkit-dashboard](https://dashboard.enableiot.com))
+* n - the sensor name ("Temperature", "Humidity", "Weight", "Force", etc.)
+* t - is the sensor type of data this source generates (This should be one of the Component Type defined in your account Catalog available in the [iotkit-dashboard](https://dashboard.enableiot.com))
 
-> The registration needs to be performed only once for each new metric
+> The registration needs to be performed only once for each new sensor
 
 ### Data Submission 
 
-Once the metric has been registered, you can send your observations for that metric to the cloud. Everything else will be provided by the agent before your message is relayed to the cloud. Regardless of the protocol used, the `iotkit-agent` expects the inbound message to be in following format:
+Once the sensor has been registered, you can send your observations for that sensor to the cloud. Everything else will be provided by the agent before your message is relayed to the cloud. Regardless of the protocol used, the `iotkit-agent` expects the inbound message to be in following format:
 
-    { "s": "Temperature", "v": 26.7 }
+    { "n": "temp sensor", "v": "5", "on": 1401893417000}
 
 Where:
 
-* s - is the metric name which was previous registered
-* v - is the value of this measurement
+* n - is the sensor name which was previously registered
+* v - is the value of this observation
+* on - optional: the observation timestamp
 
 ## Protocol-specific API
 
