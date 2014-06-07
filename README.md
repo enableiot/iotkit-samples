@@ -17,16 +17,25 @@ In order to use `iotkit-agent` you have to create an account on iotkit dashboard
 
 In order to submit data to the IoT Kit Cloud, the individual sensors have to be registered first. Regardless of the protocol used, the `iotkit-agent` expects the inbound sensor registration message to be in following simple format:
 
-    { "n": "temperature sensor", "t": "temperature.v1.0"}
-    
-OR
+#### UDP Message Format
+    { "n": "<sensor name>", "t": "<sensor type>" }
 
+    Examples:
+    { "n": "temperature sensor", "t": "temperature.v1.0"}
     { "n": "humidity sensor", "t": "humidity.v1.0"}
-    
+
+#### TCP Message Format
+    <size>#{ "n": "<sensor name>", "t": "<sensor type>" }
+
+    Examples:
+    53#{ "n": "temperature sensor", "t": "temperature.v1.0"}
+    47#{ "n": "humidity sensor", "t": "humidity.v1.0"}
+
 Where:
 
-* n - the sensor name ("Temperature", "Humidity", "Weight", "Force", etc.)
-* t - is the sensor type of data this source generates (This should be one of the Component Type defined in your account Catalog available in the [iotkit-dashboard](https://dashboard.enableiot.com))
+* <sensor name> - the sensor name ("Temperature", "Humidity", "Weight", "Force", etc.)
+* <sensor type> - is the sensor type of data this source generates (This should be one of the Component Type defined in your account Catalog available in the [iotkit-dashboard](https://dashboard.enableiot.com))
+* <size> - is the message length
 
 > The registration needs to be performed only once for each new sensor
 
@@ -34,13 +43,23 @@ Where:
 
 Once the sensor has been registered, you can send your observations for that sensor to the cloud. Everything else will be provided by the agent before your message is relayed to the cloud. Regardless of the protocol used, the `iotkit-agent` expects the inbound message to be in following format:
 
+#### UDP Message Format
+    { "n": "<sensor name>", "v": "<value>", "on": <on> }
+
+    Examples:
     { "n": "temp sensor", "v": "5", "on": 1401893417000}
+
+#### TCP Message Format
+    <size>#{ "n": "<sensor name>", "v": "<value>", "on": <on> }
+
+    Examples:
+    52#{ "n": "temp sensor", "v": "5", "on": 1401893417000}
 
 Where:
 
-* n - is the sensor name which was previously registered
-* v - is the value of this observation
-* on - optional: the observation timestamp
+* <sensor name> - is the sensor name which was previously registered
+* <value> - is the value of this observation
+* <on> - optional: the observation timestamp
 
 ## Protocol-specific API
 
@@ -56,7 +75,7 @@ You can use UDP to send data to the Cloud. Here is a command line example:
 
 If assuring the message delivery to the `iotkit-agent` is important to you (yes, I'm talking about you UDP) you can use a simple TCP socket connection to send your data. Here is a command line example:
 
-    echo -n '{ "n": "temp sensor", "v": "5", "on": 1401893417000}' | nc 127.0.0.1 7070
+    echo -n '52#{ "n": "temp sensor", "v": "5", "on": 1401893417000}' | nc 127.0.0.1 7070
         
 ## How to
 
