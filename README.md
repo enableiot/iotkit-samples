@@ -33,9 +33,9 @@ In order to submit data to the IoT Kit Cloud, the individual sensors have to be 
 
 Where:
 
-* <sensor name> - the sensor name ("Temperature", "Humidity", "Weight", "Force", etc.)
-* <sensor type> - is the sensor type of data this source generates (This should be one of the Component Type defined in your account Catalog available in the [iotkit-dashboard](https://dashboard.enableiot.com))
-* <size> - is the message length
+* sensor name: the sensor name ("Temperature", "Humidity", "Weight", "Force", etc.)
+* sensor type: is the sensor type of data this source generates (This should be one of the Component Type defined in your account Catalog available in the [iotkit-dashboard](https://dashboard.enableiot.com))
+* size: is the message length
 
 > The registration needs to be performed only once for each new sensor
 
@@ -57,9 +57,9 @@ Once the sensor has been registered, you can send your observations for that sen
 
 Where:
 
-* <sensor name> - is the sensor name which was previously registered
-* <value> - is the value of this observation
-* <on> - optional: the observation timestamp
+* sensor name: is the sensor name which was previously registered
+* value: is the value of this observation
+* on: optional: the observation timestamp
 
 ## Protocol-specific API
 
