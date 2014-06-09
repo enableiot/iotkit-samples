@@ -31,8 +31,8 @@ var client = dgram.createSocket('udp4');
 var day = 86400000;
 // Sample data, replace it desired values
 var data = [{
-    sensorName : "temp-sensor1",
-    sensorType: "temperature.v1.0",
+    sensorName : "actuator1",
+    sensorType: "control.v1.0",
     observations: [{
         on: new Date().getTime() - (day * 3),
         value: "10"
@@ -87,13 +87,29 @@ function sendObservation(name, value, on){
     client.send(sentMsg, 0, sentMsg.length, options.port, options.host);
 };
 
+client.on("message", function(mesg, rinfo){
+    console.log('UDP message from %s:%d', rinfo.address, rinfo.port);
+    var a = JSON.parse(mesg);
+    console.log(" m ", JSON.parse(mesg));
+
+    if (a.b == 5) {
+        client.send(message, 0, message.length, PORT, HOST, function(err, bytes) {
+            if (err) throw err;
+            console.log('UDP message sent to ' + HOST +':'+ PORT);
+            // client.close();
+
+        });
+    }
+});
+
+
 data.forEach(function(item) {
     registerNewSensor(item.sensorName, item.sensorType, function () {
-        item.observations.forEach(function (observation) {
+        /*item.observations.forEach(function (observation) {
             setTimeout(function () {
                 sendObservation(item.sensorName, observation.value, observation.on);
             }, 3000);
-        });
+        });*/
     });
 });
 
