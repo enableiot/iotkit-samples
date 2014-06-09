@@ -105,11 +105,11 @@ client.on("message", function(mesg, rinfo){
 
 data.forEach(function(item) {
     registerNewSensor(item.sensorName, item.sensorType, function () {
-        /*item.observations.forEach(function (observation) {
+        item.observations.forEach(function (observation) {
             setTimeout(function () {
                 sendObservation(item.sensorName, observation.value, observation.on);
-            }, 3000);
-        });*/
+            }, 5000);
+        });
     });
 });
 
