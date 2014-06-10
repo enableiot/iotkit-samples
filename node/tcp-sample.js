@@ -84,7 +84,7 @@ function sendObservation(name, value, on){
     });
 
     var sentMsg = msg.length + "#" + msg;
-    console.log("Registering sensor: " + sentMsg);
+    console.log("Sending observation: " + sentMsg);
     client.write(sentMsg);
 }
 

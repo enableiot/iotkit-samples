@@ -83,7 +83,7 @@ function sendObservation(name, value, on){
     });
 
     var sentMsg = new Buffer(msg);
-    console.log("Registering sensor: " + sentMsg);
+    console.log("Sending observation: " + sentMsg);
     client.send(sentMsg, 0, sentMsg.length, options.port, options.host);
 };
 
