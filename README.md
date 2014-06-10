@@ -15,7 +15,12 @@ In order to use `iotkit-agent` you have to create an account on iotkit dashboard
 
 ### Sensor Registration 
 
-In order to submit data to the IoT Kit Cloud, the individual sensors have to be registered first. Regardless of the protocol used, the `iotkit-agent` expects the inbound sensor registration message to be in following simple format:
+In order to submit data to the IoT Kit Cloud, the individual sensors have to be registered first. 
+The sensors type must be included in the Component Catalog associated with your [iotkit-dashboard](https://dashboard.enableiot.com) account.
+
+> Obtain the sensors types by executing the command `catalog`. Check how to execute this command in the [iotkit-agent Readme](https://github.com/enableiot/iotkit-agent/blob/master/README.md#5-notes-about-admin-commands).
+
+Regardless of the protocol used, the `iotkit-agent` expects the inbound sensor registration message to be in following simple format:
 
 #### UDP Message Format
     { "n": "<sensor name>", "t": "<sensor type>" }
@@ -33,9 +38,9 @@ In order to submit data to the IoT Kit Cloud, the individual sensors have to be 
 
 Where:
 
-* sensor name: the sensor name ("Temperature", "Humidity", "Weight", "Force", etc.)
-* sensor type: is the sensor type of data this source generates (This should be one of the Component Type defined in your account Catalog available in the [iotkit-dashboard](https://dashboard.enableiot.com))
-* size: is the message length
+* _sensor name_: the sensor name ("Temperature", "Humidity", "Weight", "Force", etc.). 
+* _sensor type_: is the sensor type of data this source generates (This should be one of the Component Type defined in your account Catalog available in the [iotkit-dashboard](https://dashboard.enableiot.com))
+* _size_: is the message length
 
 > The registration needs to be performed only once for each new sensor
 
