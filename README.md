@@ -44,6 +44,10 @@ Where:
 
 > The registration needs to be performed only once for each new sensor
 
+##### Usage of `register` command
+For **testing purposes**, you can use the command `iotkit-admin register <comp_name> <catalogid>`. The <catalogid> is obtained with the `catalog` command mentioned before.
+> It's not required that the iotkit-agent be running to execute this command. The command will start the iotkit-agent, register the component and stop it.
+
 ### Data Submission 
 
 Once the sensor has been registered, you can send your observations for that sensor to the cloud. Everything else will be provided by the agent before your message is relayed to the cloud. Regardless of the protocol used, the `iotkit-agent` expects the inbound message to be in following format:
@@ -66,16 +70,18 @@ Where:
 * value: is the value of this observation
 * on: optional: the observation timestamp
 
+##### Usage of `observation` command
+You can also use the command `iotkit-admin observation <comp_name> <value>` (just for **testing purposes**) to submit data for a specific component.
+
+As command `register`, this will start the iotkit-agent, send the observation for the component and then stop the iotkit-agent.
+
+> For more information about `iotkit-admin` commands, go to section [Notes about "admin" commands](https://github.com/enableiot/iotkit-agent#5-notes-about-admin-commands) of iotkit-agent readme file.
+
 ## Protocol-specific API
 
 Many development frameworks have their own implementation of each one of these protocols. The following command-line examples should give you an idea how to access `iotkit-agent` API:
 
-#### UDP
 
-You can use UDP to send data to the Cloud. Here is a command line example:
-
-    echo -n '{ "n": "temp sensor", "v": "5", "on": 1401893417000}' | nc -4u -w1 127.0.0.1 41234
-         
 #### TCP
 
 If assuring the message delivery to the `iotkit-agent` is important to you (yes, I'm talking about you UDP) you can use a simple TCP socket connection to send your data. Here is a command line example:
