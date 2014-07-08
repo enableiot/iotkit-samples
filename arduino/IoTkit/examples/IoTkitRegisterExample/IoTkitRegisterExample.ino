@@ -17,10 +17,9 @@ void loop() {
   
     delay(15000);
     // open Arduino Serial Monitor within 15 seconds!
-	Serial.println("Add your device id to your IoT web account:");
-	system("iotkit-admin device-id > /dev/ttyGS0 2>&1");
+	Serial.println("Find your device activation key on the IoT web account.");
     // next time you run this sketch, comment this while(1) line:
-    // and paste post-device-add API key from website instead of XXXXXXXX
+    // and paste API key from website instead of XXXXXXXX
     while(1) {}
     // now we will activate
     // all json quotes are escaped, see IoTkitSimpleExample for more details
