@@ -1,0 +1,9 @@
+.DS_Store
+.git
+.hg
+.lock-wscript
+*.sh
+buildscripts/
+*.orig
+*.log
+npm-debug.log

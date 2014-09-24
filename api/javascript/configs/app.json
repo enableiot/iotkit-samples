@@ -1,0 +1,26 @@
+{
+    "target": {
+      "host": "dashboard.us.enableiot.com",
+      "api_root": "/v1/api",
+      "username": "mark@chmarny.com",
+      "password": "@l50ryjomg#G",
+      "account": "poc"
+    },
+    "source": {
+      "deviceId": "mocked-device-2",
+      "gatewayId": "mocked-device-2",
+      "name": "MockedDevice",
+      "tags": ["US", "Oregon", "Hillsboro"],
+      "loc": [ 45.5228, -122.9897, 75.2 ],
+      "attributes" : {
+        "manufacturer": "intel",
+        "platform": "x86",
+        "os": "linux"
+      }
+    },
+    "component": {
+      "type": "TestName.v1.0",
+      "name": "MockedDeviceSensor",
+      "cid": "mocked-device-2-sensor-1"
+    }
+}

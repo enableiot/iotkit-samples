@@ -1,0 +1,33 @@
+{
+  "name": "enableiot-pump",
+  "version": "0.6.0",
+  "description": "Simple utility to push data to enableiot.com",
+  "main": "index.js",
+  "dependencies": {
+    "node-uuid": "^1.4.1",
+    "request": "^2.36.0",
+    "winston": "^0.7.3"
+  },
+  "scripts": {
+    "start": "node pump",
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mchmarny/enableiot-pump.git"
+  },
+  "keywords": [
+    "iot",
+    "data",
+    "pump"
+  ],
+  "author": "mchmarny <mark@chmarny.com> (http://mark.chmarny.com/)",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/mchmarny/enableiot-pump/issues"
+  },
+  "homepage": "https://github.com/mchmarny/enableiot-pump",
+  "devDependencies": {
+    "mocha": "^1.18.2"
+  }
+}
