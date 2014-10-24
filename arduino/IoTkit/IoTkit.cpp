@@ -103,7 +103,7 @@ bool IoTkit::checkJSON(char* json) {
 
 int IoTkit::checkPacket(const char *json)
 {
-    return (json && *json && json[strlen(json) - 1] == '\n') ? 0 : 1;
+    return (json && *json) ? 0 : 1;
 }
 
 int IoTkit::receive(void (*f)(char*)) {
