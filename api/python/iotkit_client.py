@@ -14,7 +14,9 @@
 #
 #  To use:
 #   * On the web:
-#       * Establish a user at https://dashboard.us.enableiot.com
+#       * Go to https://dashboard.us.enableiot.com
+#       * Register - be sure to click the "Sign Up Here" link. Do not use
+#       * any of the OAuth options, or you will not be able to use the API.#
 #       * Verify your email address
 #       * Enter a name for your account
 #   * Below line 39 in this file:
@@ -301,10 +303,11 @@ def get_observations(account_id, device_id, component_id):
         },
         "metrics": [
             {
-                "id": component_id,
-                "op": "none"
+                "id": component_id
             }
         ]
+        # This will include lat, lon and alt keys
+        #,"queryMeasureLocation": True
     }
     data = json.dumps(search)
     resp = requests.post(url, data=data, headers=get_user_headers(), proxies=proxies, verify=verify)
