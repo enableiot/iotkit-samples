@@ -33,20 +33,19 @@ PORT = 41234
 INTERVAL = 60
 
 
-def register_metric(metric, data_type, uom):
+def register_metric(metric_name, metric_type):
     msg = {
-        "s": metric,
-        "t": data_type,
-        "u": uom
+        "n": metric_name,
+        "t": metric_type
     }
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(json.dumps(msg), (HOST, PORT))
 
 
-def send_data(metric, value):
+def send_data(metric_name, value):
     msg = {
-        "s": metric,
+        "n": metric_name,
         "v": value
     }
 
@@ -68,7 +67,7 @@ def get_temp():
 
     return temp
 
-register_metric("temp", "float", "Celsius")
+register_metric("temp", "temperature.v1.0")
 
 next_send_time = 0
 while True:
