@@ -2,6 +2,13 @@
 //onboard ADC, AD7298, using the iio (Industrial I/O) subsystem and 
 //sends the observed data to the Intel IoTkit Cloud
 
+//Prework:
+//You need iotkit-agent installed and running.
+//Device should be activated. (by running: iotkit-admin activate ACTIVATION_CODE)
+//Following components should be registered (by running: iotkit-admin register NAME TYPE):
+//temp type e.g. temperature.v1.0
+//power of type powerswitch.v1.0
+
 #include <IoTkit.h>    // include IoTkit.h to use the Intel IoT Kit
 #include <Ethernet.h>  // must be included to use IoTkit
 #include <aJSON.h>
@@ -30,7 +37,7 @@ void loop() {
   // in this format:
   //
   // {
-  //   “n”: “temperature sensor”,
+  //   “n”: “temp”,
   //   “v”: “27.2"
   // }
   //
@@ -38,7 +45,7 @@ void loop() {
   // iotkit.send("{\"n\": \"temperature sensor\",\"v\":\"27.2\"}");
   //
 
-  iotkit.send("temperature sensor", temp);  
+  iotkit.send("temp", temp);
 
   // you can also send a full JSON string with your own variables:
   //
@@ -57,7 +64,6 @@ void loop() {
   // It must follow this prototype, but any name: void callback(char* json)
   //
 
-  //iotkit.receive();
   iotkit.receive(callback);
 
   delay(1500);
@@ -65,8 +71,8 @@ void loop() {
 
 // this is an example callback that parses a user-created JSON in the form
 // {
-//    "component": "led",
-//    "command": "off"
+//    "component": "LED01",
+//    "command": "1"
 // }
 // and turns off LED at pin 13 hard-coded
 //
@@ -76,19 +82,19 @@ void callback(char* json) {
   aJsonObject* parsed = aJson.parse(json);
   if (&parsed == NULL) {
     // invalid or empty JSON
-    Serial.println("recieved invalid JSON");
+    Serial.println("received invalid JSON");
     return;
   }
   aJsonObject* component = aJson.getObjectItem(parsed, "component");
   aJsonObject* command = aJson.getObjectItem(parsed, "command");
   if ((component != NULL)) {
-    if (strcmp(component->valuestring, "led") == 0) {
+    if (strcmp(component->valuestring, "LED") == 0) {
       if ((command != NULL)) {
-        if (strcmp(command->valuestring, "off") == 0) {
+        if (strcmp(command->valuestring, "0") == 0) {
           pinMode(13, OUTPUT);
           digitalWrite(13, false);
         }
-        if (strcmp(command->valuestring, "on") == 0) {
+        if (strcmp(command->valuestring, "1") == 0) {
           pinMode(13, OUTPUT);
           digitalWrite(13, true);
         }
@@ -128,7 +134,7 @@ int getADCTemp(){
   offset_i = atoi(offset);
   
   int temp = (raw_i + offset_i) * scale_i;  //Calculate temperature in milli-degrees celcius
-  temp /= 1000;                         //divide by 1000 to convert to degrees celcius
+  temp /= 1000;                             //divide by 1000 to convert to degrees celcius
   return temp;  
   
 }

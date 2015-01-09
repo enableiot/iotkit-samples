@@ -2,6 +2,13 @@
 //and sends the data to the Intel IoTkit Cloud
 //It also sends 1 as power when agent is started.
 
+//Prework:
+//You need iotkit-agent installed and running.
+//Device should be activated. (by running: iotkit-admin activate ACTIVATION_CODE)
+//Following components should be registered (by running: iotkit-admin register NAME TYPE):
+//uptime, cpu_proc, mem_proc, voltage of type e.g. temperature.v1.0
+//power of type powerswitch.v1.0
+
 #include <IoTkit.h>    // include IoTkit.h to use the Intel IoT Kit
 #include <Ethernet.h>  // must be included to use IoTkit
 #include <aJSON.h>
@@ -74,12 +81,11 @@ void logDevice(){
 }
 
 void loop() {
-  int voltage=getVolt();
   Serial.println("Voltage is: ");
   Serial.print(voltage);
   Serial.println(".");
 
-  iotkit.send("voltage", voltage);  
+  iotkit.send("voltage", getVolt());
   sendProc();
   sendMem();
   sendUptime();
