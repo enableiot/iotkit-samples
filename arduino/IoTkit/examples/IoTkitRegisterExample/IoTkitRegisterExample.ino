@@ -11,34 +11,40 @@ IoTkit iotkit;
 
 void setup() {
     Serial.begin(115200);
+    // Additional time to open Arduino Serial Monitor
+       delay(10000);
 }
 
 void loop() {
-  
-    delay(15000);
-    // open Arduino Serial Monitor within 15 seconds!
-	Serial.println("Find your device activation key on the IoT web account.");
-    // next time you run this sketch, comment this while(1) line:
-    // and paste API key from website instead of XXXXXXXX
-    while(1) {}
-    // now we will activate
-    // all json quotes are escaped, see IoTkitSimpleExample for more details
-    system("iotkit-admin activate XXXXXXXX > /dev/ttyGS0 2>&1");
-    //look for success
+    system("iotkit-admin test > /dev/ttyGS0 2>&1"); // Check connectivity
+    system("iotkit-admin set-device-id YOUR_DEVICE_ID > /dev/ttyGS0 2>&1");   // Replace YOUR_DEVICE_ID with your value
+    system("iotkit-admin set-data-directory /usr/lib/node_modules/iotkit-agent/data > /dev/ttyGS0 2>&1");
+    system("iotkit-admin proxy http://PROXY-HOST PORT > /dev/ttyGS0 2>&1"); // Replace values with your proxy host and port or comment if proxy is not used
+    system("iotkit-admin activate XXXXXXXX > /dev/ttyGS0 2>&1");    // Find your device activation key on the IoT web account and replace XXXXXXXX
+    // After activation we should restart iotkit-agent service
+    system("systemctl stop iotkit-agent > /dev/ttyGS0 2>&1");
+    delay(5000);
+    system("systemctl start iotkit-agent > /dev/ttyGS0 2>&1");
+    for(int i = 0; i < 3; i++) {
+      delay(5000);
+      system("systemctl status iotkit-agent > /dev/ttyGS0 2>&1");
+    }
     
     //now we will register sensor names
     iotkit.begin();
     // feel free to change/add more sensors you will be sending data from
-	iotkit.send("{ \"n\": \"temperature sensor\", \"t\": \"temperature.v1.0\"}\n");
-	iotkit.send("{ \"n\": \"humidity sensor\", \"t\": \"humidity.v1.0\"}\n");
+	iotkit.send("{ \"n\": \"temperature\", \"t\": \"temperature.v1.0\"}\n");
+	iotkit.send("{ \"n\": \"humidity\", \"t\": \"humidity.v1.0\"}\n");
+	iotkit.send("{ \"n\": \"power\", \"t\": \"powerswitch.v1.0\"}\n");
 	//
 	// Where:
 	//
 	// n - the sensor name ("Temperature", "Humidity", "Weight", "Force", etc.)
 	// t - is the sensor type of data this source generates 
 	// (This should be one of the Component Type defined in your account Catalog available in the iotkit-dashboard)
-
 	// stopping loop, go ahead and load another sketch! Try IoTkitSimpleExample
 	Serial.println("done");
-	while(1) {}
+	while(1) {
+	  delay(60000);
+	}
 }

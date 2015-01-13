@@ -8,6 +8,7 @@
 //Following components should be registered (by running: iotkit-admin register NAME TYPE):
 //temp type e.g. temperature.v1.0
 //power of type powerswitch.v1.0
+//You can also use IoTkitRegisterExample to activate and register new components
 
 #include <IoTkit.h>    // include IoTkit.h to use the Intel IoT Kit
 #include <Ethernet.h>  // must be included to use IoTkit
@@ -22,9 +23,17 @@ void setup() {
   Serial.begin(115200);
   // call begin on the IoTkit object before calling any other methods
   iotkit.begin();
+
+  // If you are receiving incoming commands, listen for them with receive
+  // If you have your own custom json-parsing receive function, pass as argument
+  // such as iotkit.receive(callback);
+  // It must follow this prototype, but any name: void callback(char* json)
+  //
+  iotkit.receive(callback);
 }
 
 void loop() {
+  Serial.println("Reading temperature");
   temp = getADCTemp();
   Serial.print("Temperature is ");
   Serial.print(temp);
@@ -44,9 +53,6 @@ void loop() {
   // you need to escape the quotations to pass it directly to iotkit.send:
   // iotkit.send("{\"n\": \"temperature sensor\",\"v\":\"27.2\"}");
   //
-
-  iotkit.send("temp", temp);
-
   // you can also send a full JSON string with your own variables:
   //
   // aJsonObject* root = aJson.createObject();
@@ -56,17 +62,9 @@ void loop() {
   //    iotkit.send(aJson.print(root)); // this sends your full json
   //    aJson.deleteItem(root);
   // }
-  // 
-
-  // If you are receiving incoming commands, listen for them with receive
-  // If you have your own custom json-parsing receive function, pass as argument
-  // such as iotkit.receive(callback);
-  // It must follow this prototype, but any name: void callback(char* json)
   //
-
-  iotkit.receive(callback);
-
-  delay(1500);
+  iotkit.send("temperature", temp);
+  delay(2000);
 }
 
 // this is an example callback that parses a user-created JSON in the form
@@ -76,7 +74,6 @@ void loop() {
 // }
 // and turns off LED at pin 13 hard-coded
 //
-
 void callback(char* json) {
   Serial.println(json);
   aJsonObject* parsed = aJson.parse(json);
@@ -105,6 +102,7 @@ void callback(char* json) {
 
 // reads hardware temp sensor
 int getADCTemp(){
+  bool successful = true;
   char scale[4];
   char raw[4];
   char offset[4];
@@ -113,28 +111,54 @@ int getADCTemp(){
   int scale_i;
   int offset_i;
 
-    
+  //read the values from scale, raw and offset files.
+  //we need all three values, because the formula for
+  //calulating the actual temperature in milli-degrees Celcius
+  //is: TEMP = (RAW + OFFSET) * SCALE
   FILE *fp_raw;
-  fp_raw = fopen("/sys/bus/iio/devices/iio:device0/in_temp0_raw", "r");     //read the values from scale, raw and offset files.
-  fgets(raw, 4, fp_raw);                                                    //we need all three values, because the formula for
-  fclose(fp_raw);                                                           //calulating the actual temperature in milli-degrees Celcius
-                                                                            //is: TEMP = (RAW + OFFSET) * SCALE 
+  fp_raw = fopen("/sys/bus/iio/devices/iio:device0/in_temp0_raw", "r");
+  if(!fp_raw) {
+    fgets(raw, 4, fp_raw);
+    fclose(fp_raw);
+  } else {
+    Serial.println("Cannot open file /sys/bus/iio/devices/iio:device0/in_temp0_raw for reading.");
+    Serial.println("Try another sensors readings in this directory");
+    successful = false;
+  }
+
+
   FILE *fp_scale;
   fp_scale = fopen("/sys/bus/iio/devices/iio:device0/in_temp0_scale", "r");
-  fgets(scale, 4, fp_scale);
-  fclose(fp_scale);
+  if(!fp_scale) {
+    fgets(scale, 4, fp_scale);
+    fclose(fp_scale);
+  } else {
+    Serial.println("Cannot open file /sys/bus/iio/devices/iio:device0/in_temp0_raw for reading.");
+    Serial.println("Try another sensors readings in this directory");
+    successful = false;
+  }
+
   
   FILE *fp_offset;
   fp_offset = fopen("/sys/bus/iio/devices/iio:device0/in_temp0_offset", "r");
-  fgets(offset, 4, fp_offset);
-  fclose(fp_offset);
-   
-  raw_i = atoi(raw);         //we have the values now, but they are in ASCII form-                                                       
-  scale_i = atoi(scale);     //we need them as integers so we can use them for calculations.
-  offset_i = atoi(offset);
-  
-  int temp = (raw_i + offset_i) * scale_i;  //Calculate temperature in milli-degrees celcius
-  temp /= 1000;                             //divide by 1000 to convert to degrees celcius
-  return temp;  
-  
+  if(!fp_offset) {
+    fgets(offset, 4, fp_offset);
+    fclose(fp_offset);
+  } else {
+    Serial.println("Cannot open file /sys/bus/iio/devices/iio:device0/in_temp0_raw for reading.");
+    Serial.println("Try another sensors readings in this directory");
+    successful = false;
+  }
+
+  if(successful) {
+    raw_i = atoi(raw);         //we have the values now, but they are in ASCII form-
+    scale_i = atoi(scale);     //we need them as integers so we can use them for calculations.
+    offset_i = atoi(offset);
+
+    int temp = (raw_i + /*offset_i*/ 0) * scale_i;  //Calculate temperature in milli-degrees celcius
+    temp /= 1000;                                   //divide by 1000 to convert to degrees celcius
+    temp = raw_i;
+    return temp;
+  }
+  return 0;
 }
