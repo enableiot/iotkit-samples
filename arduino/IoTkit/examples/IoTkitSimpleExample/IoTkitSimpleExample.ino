@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //You need iotkit-agent installed and running.
 //Device should be activated. (by running: iotkit-admin activate ACTIVATION_CODE)
 //Following components should be registered (by running: iotkit-admin register NAME TYPE):
-//temp type e.g. temperature.v1.0
+//temperature of type temperature.v1.0
 //power of type powerswitch.v1.0
 //You can also use IoTkitRegisterExample to activate and register new components
 
