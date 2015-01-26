@@ -34,7 +34,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //Device should be activated. (by running: iotkit-admin activate ACTIVATION_CODE)
 //Following components should be registered (by running: iotkit-admin register NAME TYPE):
 //temperature of type temperature.v1.0
-//power of type powerswitch.v1.0
 //You can also use IoTkitRegisterExample to activate and register new components
 
 #include <IoTkit.h>    // include IoTkit.h to use the Intel IoT Kit
@@ -50,13 +49,6 @@ void setup() {
   Serial.begin(115200);
   // call begin on the IoTkit object before calling any other methods
   iotkit.begin();
-
-  // If you are receiving incoming commands, listen for them with receive
-  // If you have your own custom json-parsing receive function, pass as argument
-  // such as iotkit.receive(callback);
-  // It must follow this prototype, but any name: void callback(char* json)
-  //
-  iotkit.receive(callback);
 }
 
 void loop() {
@@ -92,39 +84,6 @@ void loop() {
   //
   iotkit.send("temperature", temp);
   delay(2000);
-}
-
-// this is an example callback that parses a user-created JSON in the form
-// {
-//    "component": "LED01",
-//    "command": "1"
-// }
-// and turns off LED at pin 13 hard-coded
-//
-void callback(char* json) {
-  Serial.println(json);
-  aJsonObject* parsed = aJson.parse(json);
-  if (&parsed == NULL) {
-    // invalid or empty JSON
-    Serial.println("received invalid JSON");
-    return;
-  }
-  aJsonObject* component = aJson.getObjectItem(parsed, "component");
-  aJsonObject* command = aJson.getObjectItem(parsed, "command");
-  if ((component != NULL)) {
-    if (strcmp(component->valuestring, "LED") == 0) {
-      if ((command != NULL)) {
-        if (strcmp(command->valuestring, "0") == 0) {
-          pinMode(13, OUTPUT);
-          digitalWrite(13, false);
-        }
-        if (strcmp(command->valuestring, "1") == 0) {
-          pinMode(13, OUTPUT);
-          digitalWrite(13, true);
-        }
-      }
-    }
-  }
 }
 
 // reads hardware temp sensor

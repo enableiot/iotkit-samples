@@ -108,11 +108,12 @@ void logDevice(){
 }
 
 void loop() {
+  int voltage = getVolt();
   Serial.println("Voltage is: ");
   Serial.print(voltage);
   Serial.println(".");
 
-  iotkit.send("voltage", getVolt());
+  iotkit.send("voltage", voltage);
   sendProc();
   sendMem();
   sendUptime();
