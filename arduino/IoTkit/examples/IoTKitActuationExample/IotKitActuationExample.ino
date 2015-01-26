@@ -26,7 +26,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 //This example reacts for default actuator component if registered on device
-//LED.v1.0 command is used
+//Prequisites: 
+// 1. Device must be activated
+// 2. Agent must be started and configured to use MQTT protocol
+// 3. A component named "power" of the default type "powerswitch.v1.0" must be
+//    registered on the device. The default powerswitch.v1.0 component type has
+//    a command named "LED.v1.0"
 //When executed from Control section on dashboard with value 0, LED light is turned off
 //When executed from Control section on dashboard with value 1, LED light is turned on
 //iotkit-agent must use MQTT connection (not REST) for actuation to work.
@@ -72,14 +77,14 @@ void callback(char* json) {
   aJsonObject* value = name->next; // value: 1/0
   
   if ((component != NULL)) {
-    if (strcmp(component->valuestring, "actuator") == 0) {
+    if (strcmp(component->valuestring, "power") == 0) {
       if ((command != NULL)) {
-        if (strcmp(command->valuestring, "light") == 0 && strcmp(value->valuestring, "0") == 0) {
+        if (strcmp(command->valuestring, "LED.v1.0") == 0 && strcmp(value->valuestring, "0") == 0) {
           Serial.println("Light Off!");
           pinMode(13, OUTPUT);
           digitalWrite(13, false);
         }
-        if (strcmp(command->valuestring, "light") == 0 && strcmp(value->valuestring, "1") == 0) {
+        if (strcmp(command->valuestring, "LED.v1.0") == 0 && strcmp(value->valuestring, "1") == 0) {
           Serial.println("Light on!");
           pinMode(13, OUTPUT);
           digitalWrite(13, true);
