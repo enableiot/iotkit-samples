@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // create an object of the IoTkit class
 IoTkit iotkit;        
-int temp;
+int voltage;
 char buf[112];
 
 void setup() {
@@ -120,7 +120,7 @@ void loop() {
   delay(5000);
 }
 
-// reads hardware temp sensor
+// reads hardware voltage sensor
 int getVolt(){
   char scale[4];
   char raw[4];
@@ -131,10 +131,10 @@ int getVolt(){
   int offset_i;
 
   FILE *fp_raw;
-  fp_raw = fopen("/sys/bus/iio/devices/iio:device1/in_voltage0_raw", "r");  //read the values from scale, raw and offset files.
-  fgets(raw, 4, fp_raw);                                                    //we need all three values, because the formula for
-  fclose(fp_raw);                                                           //calulating the actual temperature in milli-degrees Celcius
-                                                                            //is: TEMP = (RAW + OFFSET) * SCALE 
+  fp_raw = fopen("/sys/bus/iio/devices/iio:device1/in_voltage0_raw", "r");  //read the values from scale and raw
+  fgets(raw, 4, fp_raw);                                                    //the formula for calulating the actual voltage
+  fclose(fp_raw);                                                           //is: VOLTAGE = RAW * SCALE 
+                                                                            
   FILE *fp_scale;
   fp_scale = fopen("/sys/bus/iio/devices/iio:device1/in_voltage_scale", "r");
   fgets(scale, 4, fp_scale);
@@ -142,9 +142,8 @@ int getVolt(){
   
   raw_i = atoi(raw);         //we have the values now, but they are in ASCII form-                                                       
   scale_i = atoi(scale);     //we need them as integers so we can use them for calculations.
-  //offset_i = atoi(offset);
   
-  float temp = raw_i  * scale_i;  //Calculate temperature in milli-degrees celcius
-                                  //divide by 1000 to convert to degrees celcius
-  return temp;
+  float voltage = raw_i  * scale_i;  //Calculate voltage
+
+  return voltage;
 }
