@@ -44,6 +44,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 IoTkit iotkit;        
 int temp;
 
+/*
+ "therm_file" - SoC temperature sensor:
+ On Galileo Gen2 - use thermal_zone0
+ On Edison       - use thermal_zone1 (ambient temp)
+                       thermal_zone3 (core0)
+                       thermal_zone4 (core1)
+*/
+char* therm_file = "/sys/devices/virtual/thermal/thermal_zone3/temp";
+
 
 void setup() {
   Serial.begin(115200);
@@ -53,7 +62,7 @@ void setup() {
 
 void loop() {
   Serial.println("Reading temperature");
-  temp = getADCTemp();
+  temp = getTemp(); 
   Serial.print("Temperature is ");
   Serial.print(temp);
   Serial.println(" degrees celcius.");
@@ -86,65 +95,29 @@ void loop() {
   delay(2000);
 }
 
-// reads hardware temp sensor
-int getADCTemp(){
+// Generic Edison/Galileo function to read hardware temp sensor
+int getTemp()
+{
   bool successful = true;
-  char scale[4];
-  char raw[4];
-  char offset[4];
   
-  int raw_i;
-  int scale_i;
-  int offset_i;
-
-  //read the values from scale, raw and offset files.
-  //we need all three values, because the formula for
-  //calulating the actual temperature in milli-degrees Celcius
-  //is: TEMP = (RAW + OFFSET) * SCALE
-  FILE *fp_raw;
-  fp_raw = fopen("/sys/bus/iio/devices/iio:device0/in_temp0_raw", "r");
-  if(fp_raw != NULL) {
-    fgets(raw, 4, fp_raw);
-    fclose(fp_raw);
+  // SoC DTS_1
+  int socTemp;
+  char rawTemp[6];
+  FILE *fp_temp;
+  fp_temp = fopen(therm_file, "r");
+  if(fp_temp != NULL) {
+    fgets(rawTemp, 6, fp_temp);
+    fclose(fp_temp);
   } else {
-    Serial.println("Cannot open file /sys/bus/iio/devices/iio:device0/in_temp0_raw for reading.");
-    Serial.println("Try another sensors readings in this directory");
-    successful = false;
-  }
-
-
-  FILE *fp_scale;
-  fp_scale = fopen("/sys/bus/iio/devices/iio:device0/in_temp0_scale", "r");
-  if(fp_scale != NULL) {
-    fgets(scale, 4, fp_scale);
-    fclose(fp_scale);
-  } else {
-    Serial.println("Cannot open file /sys/bus/iio/devices/iio:device0/in_temp0_raw for reading.");
-    Serial.println("Try another sensors readings in this directory");
-    successful = false;
-  }
-
-  
-  FILE *fp_offset;
-  fp_offset = fopen("/sys/bus/iio/devices/iio:device0/in_temp0_offset", "r");
-  if(fp_offset != NULL) {
-    fgets(offset, 4, fp_offset);
-    fclose(fp_offset);
-  } else {
-    Serial.println("Cannot open file /sys/bus/iio/devices/iio:device0/in_temp0_raw for reading.");
+    Serial.println("Cannot open file for reading.");
+    Serial.println(therm_file);
     Serial.println("Try another sensors readings in this directory");
     successful = false;
   }
 
   if(successful) {
-    raw_i = atoi(raw);         //we have the values now, but they are in ASCII form-
-    scale_i = atoi(scale);     //we need them as integers so we can use them for calculations.
-    offset_i = atoi(offset);
-
-    int temp = (raw_i + /*offset_i*/ 0) * scale_i;  //Calculate temperature in milli-degrees celcius
-    temp /= 1000;                                   //divide by 1000 to convert to degrees celcius
-    temp = raw_i;
-    return temp;
+    socTemp = atoi(rawTemp)/1000;
+    return socTemp;
   }
   return 0;
 }
