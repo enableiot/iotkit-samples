@@ -11,5 +11,5 @@ Before reading this, please read [parent README](../README.md "").
 
 * **IotKitSendMetricsExample** - Sample sketch reads the cpu load, memory usage, voltage and uptime on Edison board and sends the data to the Intel IoTkit Cloud. It also sends 1 as power when agent is started.
 
-* **IoTkitSimpleExample** - Sample sketch to read system temperature/voltage values and upload to the cloud. Temperature values are only valid on **Galileo** devices. Edison temperature values will be 0. 
+* **IoTkitSimpleExample** - Sample sketch to read system temperature/voltage values and upload to the cloud. Temperature values are valid on **Galileo** devices by default. Modify the sketch to measure temperatures on **Edison** devices. 
 
