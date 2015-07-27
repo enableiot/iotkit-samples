@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2015, Intel Corporation
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -32,6 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //Following components should be registered (by running: iotkit-admin register NAME TYPE):
 //temperature of type temperature.v1.0
 //You can also use IoTkitRegisterExample to activate and register new components
+//Restart iotkit-agent for it to be aware of new components: 
+//   # systemctl restart iotkit-agent
 
 #include <IoTkit.h>    // include IoTkit.h to use the Intel IoT Kit
 #include <Ethernet.h>  // must be included to use IoTkit
