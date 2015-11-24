@@ -84,10 +84,17 @@ Many development frameworks have their own implementation of each one of these p
 
 #### TCP
 
-If assuring the message delivery to the `iotkit-agent` is important to you (yes, I'm talking about you UDP) you can use a simple TCP socket connection to send your data. Here is a command line example:
+If assuring the message delivery to the `iotkit-agent` is important you can use a simple TCP socket connection to send your data. Here is a command line example:
 
     echo -n '52#{ "n": "temp sensor", "v": "5", "on": 1401893417000}' | nc 127.0.0.1 7070
-        
+
+#### UDP
+
+You use same way to test UDP connection:
+
+    echo -n '{ "n": "temp sensor", "v": "5", "on": 1401893417000}' | nc -u 127.0.0.1 41234
+
+
 ## How to
 
 See our [wiki pages](https://github.com/enableiot/iotkit-samples/wiki) for additional information (FAQs, Arduino, Data access etc.)
